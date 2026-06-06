@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KAJ AI Local</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <aside class="sidebar">
+        <h1>KAJ AI</h1>
+        <p>Deteksi misinformasi dan konten AI/Human berbasis Naive Bayes di localhost XAMPP.</p>
+        <div class="status">Metode: Naive Bayes</div>
+        <nav class="sideNav" aria-label="Menu utama">
+          <button class="navItem active" data-view="analysis">Analisis</button>
+          <button class="navItem" data-view="training">Data Pelatihan</button>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <div id="analysisView">
+          <div class="topbar">
+            <div class="tabs" role="tablist" aria-label="Mode analisis">
+              <button class="tab active" data-mode="text">Teks</button>
+              <button class="tab" data-mode="image">Gambar</button>
+              <button class="tab" data-mode="audio">Suara</button>
+              <button class="tab" data-mode="video">Video / Link</button>
+            </div>
+            <select id="analysisLanguage" class="selectInput" aria-label="Bahasa analisis">
+              <option value="auto">Deteksi Otomatis</option>
+              <option value="id">Indonesia</option>
+              <option value="en">English</option>
+              <option value="ms">Melayu</option>
+              <option value="es">Espanol</option>
+              <option value="fr">Francais</option>
+              <option value="de">Deutsch</option>
+              <option value="pt">Portugues</option>
+            </select>
+            <button id="analyzeBtn" class="primary">Analisis</button>
+          </div>
+
+          <div class="workspace">
+            <section class="panel inputPanel">
+              <label id="textLabel" for="textInput">Input artikel berita atau postingan media sosial</label>
+              <textarea id="textInput">Viral sebelum dihapus, klaim ini tanpa bukti dan membuat warga panik.</textarea>
+
+              <label id="fileLabel" class="hidden" for="fileInput">Pilih file</label>
+              <input id="fileInput" class="hidden fileInput" type="file" />
+
+              <div id="videoInputs" class="hidden">
+                <label for="videoLinkInput">Link video atau konten</label>
+                <input id="videoLinkInput" class="textInput" type="url" placeholder="https://youtube.com/watch?v=..." />
+                <label for="videoContextInput">Judul, caption, transkrip, atau deskripsi konten</label>
+                <textarea id="videoContextInput" class="contextTextarea" placeholder="Tempel judul, caption, transkrip, komentar, atau deskripsi video agar analisis lebih akurat."></textarea>
+                <label for="videoFileInput">File video lokal opsional</label>
+                <input id="videoFileInput" class="fileInput" type="file" accept="video/*" />
+              </div>
+            </section>
+
+            <aside class="panel resultPanel">
+              <div id="emptyState" class="empty">Hasil analisis akan tampil di sini.</div>
+              <div id="result" class="hidden">
+                <div class="metric">
+                  <div class="metricHeader"><span>Kredibilitas</span><strong id="credibilityText">0%</strong></div>
+                  <div class="bar"><div id="credibilityBar" class="barFill good"></div></div>
+                </div>
+                <div class="metric">
+                  <div class="metricHeader"><span>Risiko Misinformasi</span><strong id="riskText">0%</strong></div>
+                  <div class="bar"><div id="riskBar" class="barFill risk"></div></div>
+                </div>
+                <div class="metric">
+                  <div class="metricHeader"><span>Probabilitas AI</span><strong id="aiText">0%</strong></div>
+                  <div class="bar"><div id="aiBar" class="barFill warn"></div></div>
+                </div>
+
+                <p><strong>Metode:</strong> <span id="methodText">Naive Bayes</span></p>
+                <p><strong>Bahasa:</strong> <span id="languageText">-</span></p>
+                <p><strong>Kepercayaan:</strong> <span id="confidenceText">0%</span></p>
+                <p><strong>Prediksi:</strong> <span id="labelText">-</span></p>
+                <h2>Faktor Risiko</h2>
+                <ul id="riskFactors"></ul>
+                <h2>Penjelasan</h2>
+                <p id="explanation"></p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div id="trainingView" class="hidden">
+          <div class="topbar">
+            <div>
+              <h2 class="pageTitle">Data Pelatihan Human / AI</h2>
+              <p class="pageSubtitle">Tambahkan data latih berdasarkan jenis data, bahasa, link, dan upload file lokal.</p>
+            </div>
+            <button id="retrainBtn" class="primary">Train Model</button>
+          </div>
+
+          <div class="trainingGrid">
+            <div class="trainingColumn">
+              <section class="panel">
+                <label for="trainText">Teks / deskripsi / caption / transkrip data latih</label>
+                <textarea id="trainText" class="trainTextarea" placeholder="Masukkan contoh teks, caption, transkrip, atau deskripsi untuk melatih model..."></textarea>
+
+                <label for="trainLink">Link sumber pelatihan</label>
+                <input id="trainLink" class="textInput" type="url" placeholder="https://contoh.com/konten-atau-video" />
+
+                <label for="trainFile">Upload file pelatihan</label>
+                <input id="trainFile" class="fileInput" type="file" />
+
+                <div class="formRow">
+                  <div>
+                    <label for="trainLabel">Label</label>
+                    <select id="trainLabel" class="selectInput">
+                      <option value="human">Human</option>
+                      <option value="ai">AI Generated</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="trainModality">Jenis Data</label>
+                    <select id="trainModality" class="selectInput">
+                      <option value="text">Teks / Konten</option>
+                      <option value="image">Gambar</option>
+                      <option value="audio">Suara</option>
+                      <option value="video">Video</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="trainLanguage">Bahasa</label>
+                    <select id="trainLanguage" class="selectInput">
+                      <option value="id">Indonesia</option>
+                      <option value="en">English</option>
+                      <option value="ms">Melayu</option>
+                      <option value="es">Espanol</option>
+                      <option value="fr">Francais</option>
+                      <option value="de">Deutsch</option>
+                      <option value="pt">Portugues</option>
+                      <option value="auto">Auto / Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="buttonRow">
+                  <button id="addTrainingBtn" class="primary">Tambah Data</button>
+                  <button id="resetTrainingBtn" class="secondary">Reset Dataset</button>
+                </div>
+              </section>
+
+              <section class="panel">
+                <h2 class="sectionTitle">Uji Model</h2>
+                <label for="testText">Teks / caption / transkrip uji</label>
+                <textarea id="testText" class="testTextarea" placeholder="Masukkan konten untuk menguji model setelah training..."></textarea>
+
+                <label for="testLink">Link uji</label>
+                <input id="testLink" class="textInput" type="url" placeholder="https://contoh.com/konten-uji" />
+
+                <label for="testFile">Upload file uji</label>
+                <input id="testFile" class="fileInput" type="file" />
+
+                <div class="formRow twoColumns">
+                  <div>
+                    <label for="testModality">Jenis Data</label>
+                    <select id="testModality" class="selectInput">
+                      <option value="text">Teks / Konten</option>
+                      <option value="image">Gambar</option>
+                      <option value="audio">Suara</option>
+                      <option value="video">Video</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="testLanguage">Bahasa</label>
+                    <select id="testLanguage" class="selectInput">
+                      <option value="auto">Deteksi Otomatis</option>
+                      <option value="id">Indonesia</option>
+                      <option value="en">English</option>
+                      <option value="ms">Melayu</option>
+                      <option value="es">Espanol</option>
+                      <option value="fr">Francais</option>
+                      <option value="de">Deutsch</option>
+                      <option value="pt">Portugues</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="buttonRow">
+                  <button id="testModelBtn" class="primary">Uji Model</button>
+                </div>
+
+                <div id="testResult" class="testResult hidden"></div>
+              </section>
+            </div>
+
+            <aside class="panel">
+              <div class="statsGrid">
+                <div class="statBox"><span>Total</span><strong id="totalCount">0</strong></div>
+                <div class="statBox"><span>Human</span><strong id="humanCount">0</strong></div>
+                <div class="statBox"><span>AI</span><strong id="aiCount">0</strong></div>
+                <div class="statBox"><span>Bahasa</span><strong id="languageCount">0</strong></div>
+                <div class="statBox"><span>Jenis Data</span><strong id="modalityCount">0</strong></div>
+              </div>
+              <h2>Dataset</h2>
+              <div id="trainingList" class="trainingList"></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
